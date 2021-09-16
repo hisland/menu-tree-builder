@@ -1,6 +1,12 @@
 {
-  "name": "tree-builder",
-  "version": "0.0.0",
+  "name": "menu-tree-builder",
+  "version": "0.0.1",
+  "description": "用于快速生成和维护菜单",
+  "author": {
+    "name": "hisland",
+    "email": "hisland@qq.com"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
