@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "mitt": "^3.0.0",
+    "tree-walk-util": "^3.0.0",
     "vue": "^3.2.6"
   },
   "devDependencies": {

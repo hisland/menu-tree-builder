@@ -1,20 +1,20 @@
 <template>
   <div :class="ss.wrap">
-    <div v-for="(vv0, index0) in list" :key="index0">
+    <div>
       <div :class="ss.node">
-        <div :class="ss.close" @click="DelThis(index0)">x</div>
         <div
-          :class="[ss.name, globalStore.currentNode === vv0 && ss.curr]"
-          @click="SetCurrent(vv0, index0)"
+          :class="[ss.name, globalStore.currentNode === fakeRoot && ss.curr]"
+          @click="SetCurrent(fakeRoot)"
         >
-          {{ vv0.name }}
+          根
         </div>
       </div>
       <Tree
-        v-if="vv0.children && vv0.children.length"
-        :list="vv0.children"
+        :list="globalStore.tree"
+        style="border-right: 1px solid #ccc"
       ></Tree>
     </div>
+    <Table></Table>
   </div>
 </template>
 <script>
@@ -23,17 +23,12 @@ import { onMounted } from 'vue'
 import { SetCurrent } from './store'
 import { globalStore } from './store'
 export default {
-  name: 'Tree',
-  props: {
-    list: null,
-  },
+  props: {},
   emits: [],
   setup(props, { attrs, slots, emit }) {
     return {
       globalStore,
-      DelThis(index0) {
-        props.list.splice(index0, 1)
-      },
+      fakeRoot: reactive({ children: globalStore.tree }),
       SetCurrent,
     }
   },
@@ -41,7 +36,10 @@ export default {
 </script>
 <style module="ss" lang="scss">
 .wrap {
-  padding-left: 5px;
+  height: 100%;
+  display: grid;
+  grid-template-areas: 'left main';
+  grid-template-columns: 30% 70%;
 }
 .node {
   height: 1em;

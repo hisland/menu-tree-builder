@@ -1,64 +1,98 @@
 <template>
   <div class="rootWrap">
-    <div class="head">
-      <Config :config="config"></Config>
-    </div>
     <div class="left">
-      <Tree :config="config" :list="tree"></Tree>
+      <textarea :value="treeJSON" @change="ChangeJSON"></textarea>
+    </div>
+    <div class="config">
+      <Config></Config>
+    </div>
+    <div class="tab">
+      <span
+        @click="globalStore.currentTab = 'LayoutTree'"
+        :class="{ current: globalStore.currentTab === 'LayoutTree' }"
+        >LayoutTree</span
+      >
+      <span
+        @click="globalStore.currentTab = 'LayoutTableFlat'"
+        :class="{ current: globalStore.currentTab === 'LayoutTableFlat' }"
+        >LayoutTableFlat</span
+      >
+      <span
+        @click="globalStore.currentTab = 'LayoutTableMerge'"
+        :class="{ current: globalStore.currentTab === 'LayoutTableMerge' }"
+        >LayoutTableMerge</span
+      >
     </div>
     <div class="main">
-      <Table :config="config" :node="currentNode"></Table>
+      <LayoutTree v-if="globalStore.currentTab === 'LayoutTree'"></LayoutTree>
     </div>
   </div>
 </template>
 <script>
 import { ref, reactive, watch } from 'vue'
+import { computed } from 'vue'
 import { onMounted } from 'vue'
-import { appMitt } from './util'
+import { globalStore } from './store'
 export default {
   props: {},
   emits: {},
   setup(props, { attrs, slots, emit }) {
-    const data = reactive({
-      currentNode: [],
-      config: {
-        childKey: 'children',
-        pidKey: 'parent',
-        showPid: false,
-        labelKey: 'name',
-        cols: ['name', 'age'],
+    return {
+      globalStore,
+      treeJSON: computed(() => JSON.stringify(globalStore.tree, null, ' ')),
+      ChangeJSON(evt) {
+        const { value } = evt.target
+        try {
+          const rs = JSON.parse(value)
+          globalStore.tree = rs
+        } catch (error) {
+          console.error(error)
+        }
       },
-      tree: [
-        { name: '11', children: [{ name: '11-0', children: [] }] },
-        { name: '22', children: [] },
-      ],
-    })
-    appMitt.on('setCurrent', (node) => {
-      data.currentNode = node
-    })
-    window.kkk =data
-    return data
+    }
   },
 }
 </script>
-<style>
-body {
-  margin: 0;
-}
+<style scoped lang="scss">
 .rootWrap {
   height: 100vh;
   display: grid;
-  grid-template-areas: 'head head' 'left main' 'left main';
-  grid-template-rows: 30% 70%;
+  grid-template-areas:
+    'left config'
+    'left tab'
+    'left main';
+  grid-template-rows: 100px 30px 1fr;
   grid-template-columns: 30% 70%;
-}
-.head {
-  grid-area: head;
 }
 .left {
   grid-area: left;
+  box-sizing: border-box;
+  border-bottom: 1px solid #ccc;
+  > textarea {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
+}
+.config {
+  grid-area: config;
+  box-sizing: border-box;
+  border-bottom: 1px solid #ccc;
+}
+.tab {
+  grid-area: tab;
+  box-sizing: border-box;
+  border-bottom: 1px solid #ccc;
+  > span {
+    padding: 3px;
+    margin: 3px;
+    &.current {
+      color: red;
+    }
+  }
 }
 .main {
   grid-area: main;
+  box-sizing: border-box;
 }
 </style>

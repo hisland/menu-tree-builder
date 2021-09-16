@@ -1,46 +1,60 @@
 <template>
-  <table>
-    <tr>
-      <td v-for="(vv0, index0) in config.cols" :key="index0">
-        <input type="text" v-model="config.cols[index0]" />
-        <span>x</span>
-      </td>
-    </tr>
-    <tr>
-      <td v-for="(key, index0) in config.cols" :key="index0">
-        <textarea
-          :value="node.rs && node.rs[key]"
-          @change="ChangeRows($event, key)"
-        ></textarea>
-      </td>
-    </tr>
-  </table>
+  <div :class="ss.wrap">
+    <div
+      :class="ss.col"
+      v-for="(key, index0) in globalStore.config.cols"
+      :key="index0"
+    >
+      <div :class="ss.row1">
+        <input type="text" v-model="globalStore.config.cols[index0]" />
+        <div>
+          <button>x</button>
+          <button>label</button>
+        </div>
+      </div>
+      <div :class="ss.row2">
+        <textarea :value="rs[key]" @change="ChangeRows($event, key)"></textarea>
+      </div>
+    </div>
+    <div :class="ss.col" key="add-col">
+      <div :class="ss.row1">
+        <button>+</button>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, computed } from 'vue'
 import { onMounted } from 'vue'
+import { GenNodeText } from './util'
+import { globalStore } from './store'
 export default {
-  props: {
-    config: null,
-    node: null,
-  },
+  props: {},
   emits: {},
   setup(props, { attrs, slots, emit }) {
+    const rs = computed(() =>
+      globalStore.currentNode
+        ? GenNodeText(globalStore.currentNode, globalStore.config.cols)
+        : {}
+    )
     return {
+      globalStore,
+      rs,
       ChangeRows(evt, key) {
-        const values = evt.target.value.split('\n')
+        const vv1 = evt.target.value.trim().replace(/\n+/g, '\n').split('\n')
+        const values = vv1.map((str) => str.trim())
         const values_length = values.length
-        const child_length = props.node.children.length
+        const child_length = globalStore.currentNode.children.length
         const max = Math.max(values_length, child_length)
         for (let ii = 0; ii < max; ii++) {
           const value = values[ii] || ''
-          if (!props.node.children[ii]) {
-            props.node.children[ii] = {
+          if (!globalStore.currentNode.children[ii]) {
+            globalStore.currentNode.children[ii] = {
               [key]: value,
               children: [],
             }
           } else {
-            props.node.children[ii][key] = value
+            globalStore.currentNode.children[ii][key] = value
           }
         }
       },
@@ -48,5 +62,23 @@ export default {
   },
 }
 </script>
-<style scoped lang="scss">
+<style module="ss" lang="scss">
+.wrap {
+  display: flex;
+  overflow: auto;
+}
+.col {
+  display: grid;
+  grid-template-areas: 'up' 'down';
+  grid-template-rows: 30% 70%;
+}
+.row1 {
+}
+.row2 {
+  > textarea {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
+}
 </style>
