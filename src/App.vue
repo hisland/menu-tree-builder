@@ -22,6 +22,8 @@
         :class="{ current: globalStore.currentTab === 'LayoutTableMerge' }"
         >LayoutTableMerge</span
       >
+      <span>表格多列</span>
+      <span>树状缩进</span>
     </div>
     <div class="main">
       <LayoutTree v-if="globalStore.currentTab === 'LayoutTree'"></LayoutTree>

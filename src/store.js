@@ -22,8 +22,10 @@ export const globalStore = reactive({
 export function SetCurrent(node) {
   globalStore.currentNode = node
 }
-export function DelCol(node) {
-  globalStore.currentNode = node
+export function DelCol(name) {
+  treeWalkDeep(globalStore.tree, (item, index, list, parent, level) => {
+    delete item.name
+  })
 }
 export function SetLabel(label) {
   globalStore.config.labelKey = label
@@ -32,6 +34,7 @@ export function SetID() {
   const { idRule } = globalStore.config
 }
 export function SetSort() {
-  const { idRule } = globalStore.config
-  treeWalkDeep(globalStore.tree, () => {})
+  treeWalkDeep(globalStore.tree, (item, index, list, parent, level) => {
+    item.sort = index
+  })
 }
